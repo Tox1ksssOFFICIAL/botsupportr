@@ -1,22 +1,19 @@
 import asyncio
 import time
-import os
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-# Получаем токен и ID модератора из переменных окружения
-TOKEN = 8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw os.environ.get("TOKEN")  
-MODERATOR_ID = 7722679810 int(os.environ.get("MODERATOR_ID"))
+TOKEN = "8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw"
+MODERATOR_ID = 7722679810  # ID модератора (@DK_2012)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Храним состояние пользователя (выбор категории)
 user_state = {}
 last_message_time = {}
 
-# Кнопки выбора категории
+# Кнопки выбора
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🐞 Сообщить о баге", callback_data="Баг")],
     [InlineKeyboardButton(text="🚫 Жалоба на читера", callback_data="Читер")],
@@ -53,16 +50,17 @@ async def choose_type(call: types.CallbackQuery):
     )
     await call.answer()
 
-# Приём сообщений от пользователя
+# Приём сообщений
 @dp.message()
 async def handle_message(message: types.Message):
     user_id = message.from_user.id
 
-    # Антиспам: 15 секунд между сообщениями
+    # Антиспам (15 секунд)
     if user_id in last_message_time:
         if time.time() - last_message_time[user_id] < 15:
             await message.answer("⏳ Пожалуйста, подождите 15 секунд перед следующим запросом.")
             return
+
     last_message_time[user_id] = time.time()
 
     category = user_state.get(user_id, "Не указано")
@@ -76,13 +74,13 @@ async def handle_message(message: types.Message):
         "📝 Сообщение:"
     )
 
-    # Пересылаем сообщение модератору
     if message.text:
         await bot.send_message(
             MODERATOR_ID,
             caption + f"\n{message.text}",
             parse_mode="Markdown"
         )
+
     elif message.photo:
         await bot.send_photo(
             MODERATOR_ID,
@@ -90,6 +88,7 @@ async def handle_message(message: types.Message):
             caption=caption,
             parse_mode="Markdown"
         )
+
     elif message.video:
         await bot.send_video(
             MODERATOR_ID,
@@ -98,7 +97,6 @@ async def handle_message(message: types.Message):
             parse_mode="Markdown"
         )
 
-    # Подтверждение пользователю
     await message.answer(
         "✅ Сообщение принято!\n\n"
         "👮 Модераторы сервера Age Peacemakers рассмотрят ваш запрос\n"
@@ -107,7 +105,7 @@ async def handle_message(message: types.Message):
         parse_mode="Markdown"
     )
 
-# Ответ модератора игроку (через reply)
+# Ответ модератора игроку
 @dp.message(lambda msg: msg.reply_to_message and msg.from_user.id == MODERATOR_ID)
 async def reply_from_moderator(message: types.Message):
     try:
@@ -127,5 +125,4 @@ async def main():
     await dp.start_polling(bot)
 
 if _name_ == "_main_":
-
     asyncio.run(main())

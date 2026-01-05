@@ -6,8 +6,8 @@ from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Получаем токен и ID модератора из переменных окружения
-TOKEN = os.environ.get("8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw")  
-MODERATOR_ID = int(os.environ.get("7722679810"))
+TOKEN = 8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw os.environ.get("TOKEN")  
+MODERATOR_ID = 7722679810 int(os.environ.get("MODERATOR_ID"))
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()

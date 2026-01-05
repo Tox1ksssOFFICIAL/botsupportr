@@ -3,20 +3,13 @@ import time
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-import os
 
-# ✅ Токен и ID через переменные окружения или вставь напрямую
-TOKEN = os.environ.get("TOKEN", "8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw")
-MODERATOR_ID = int(os.environ.get("MODERATOR_ID", 7722679810))  # ID модератора (@DK_2012)
+# ✅ Токен и ID модератора
+TOKEN = "8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw"
+MODERATOR_ID = 7722679810  # Числовой ID модератора (@DK_2012)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
-
-# ✅ Удаляем старый webhook, чтобы polling заработал
-async def remove_webhook():
-    await bot.delete_webhook(drop_pending_updates=True)
-
-asyncio.run(remove_webhook())
 
 user_state = {}
 last_message_time = {}
@@ -42,7 +35,7 @@ async def start(message: types.Message):
         "✍️ Выберите категорию ниже и опишите ситуацию.\n"
         "Вы также можете прикрепить скриншоты или видео.\n\n"
         "👮 Наша команда модераторов обязательно рассмотрит ваш запрос.\n"
-        "Спасибо, что помогаете делать Age Peacemakers лучше 💙",
+        "Спасибо за обращение 💙",
         reply_markup=keyboard,
         parse_mode="Markdown"
     )
@@ -129,10 +122,13 @@ async def reply_from_moderator(message: types.Message):
     except:
         await message.answer("❌ Ошибка: не удалось отправить ответ.")
 
-# Старт бота
+# ✅ Главная функция
 async def main():
+    # Удаляем старый webhook перед запуском polling
+    await bot.delete_webhook(drop_pending_updates=True)
+    # Запуск бота
     await dp.start_polling(bot)
 
+# Старт
 if __name__ == "__main__":
     asyncio.run(main())
-

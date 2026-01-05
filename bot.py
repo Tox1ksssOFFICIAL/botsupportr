@@ -3,17 +3,25 @@ import time
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import os
 
-TOKEN = "8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw"
-MODERATOR_ID = 7722679810  # ID модератора (@DK_2012)
+# ✅ Токен и ID через переменные окружения или вставь напрямую
+TOKEN = os.environ.get("TOKEN", "8561984209:AAHoDA8SLa0fHCK-IZrjEJm2jOr-tHKOmdw")
+MODERATOR_ID = int(os.environ.get("MODERATOR_ID", 7722679810))  # ID модератора (@DK_2012)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# ✅ Удаляем старый webhook, чтобы polling заработал
+async def remove_webhook():
+    await bot.delete_webhook(drop_pending_updates=True)
+
+asyncio.run(remove_webhook())
+
 user_state = {}
 last_message_time = {}
 
-# Кнопки выбора
+# Кнопки выбора категории
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🐞 Сообщить о баге", callback_data="Баг")],
     [InlineKeyboardButton(text="🚫 Жалоба на читера", callback_data="Читер")],
@@ -121,10 +129,9 @@ async def reply_from_moderator(message: types.Message):
     except:
         await message.answer("❌ Ошибка: не удалось отправить ответ.")
 
+# Старт бота
 async def main():
     await dp.start_polling(bot)
 
-if __name__ == "__main__":
-    
+if _name_ == "_main_":
     asyncio.run(main())
-    
